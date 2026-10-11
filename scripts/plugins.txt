@@ -1,0 +1,6 @@
+# Plugins de terceros para desarrollo (un slug por línea)
+# Las líneas que empiezan con # se ignoran.
+# Para producción, agrégalos también a scripts/vendor.lock
+advanced-custom-fields
+custom-post-type-ui
+wp-mail-smtp

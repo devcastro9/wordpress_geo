@@ -1,0 +1,7 @@
+# Formato: tipo  slug  versión   (tipo = plugin | theme)
+# Sustituye "latest" por la versión exacta que probaste en desarrollo.
+# Consulta la versión con: docker compose run --rm wpcli wp plugin list
+plugin advanced-custom-fields latest
+plugin custom-post-type-ui latest
+plugin wp-mail-smtp latest
+theme twentytwentyfive latest
