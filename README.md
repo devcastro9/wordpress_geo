@@ -133,45 +133,42 @@ En producción el puerto 3306 se publica únicamente en el loopback del servidor
 - Los cambios de estructura se hacen por código, no desde DBeaver, para que viajen a producción.
 
 ## Backups
- 
+
 ```bash
 bash scripts/backup.sh     # genera backups/db_AAAAMMDD_HHMM.sql
 ```
- 
+
 Los `.sql` y la carpeta `backups/` están en `.gitignore`. No subas volcados con datos reales.
- 
+
 ## Despliegue en producción (Linux)
- 
+
 En el servidor se crea un `.env` propio con claves fuertes y `DOMAIN=tudominio.com`.
- 
+
 ```bash
 git clone <url-del-repo> directorio-wp
 cd directorio-wp
 cp .env.example .env        # editar con valores reales
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
- 
+
 Diferencias respecto a desarrollo:
- 
+
 - El código va **dentro de la imagen** (`Dockerfile`), sin bind mounts.
 - Caddy obtiene y renueva el certificado HTTPS automáticamente.
 - No hay Mailpit, ni modo debug, ni `wpcli` activo.
-- MySQL fijado a una versión exacta (`8.4.11`).
 Para migrar contenido de un entorno a otro, usa `wp db export` / `wp db import` y después:
- 
+
 ```bash
 wp search-replace 'http://localhost:8080' 'https://tudominio.com' --all-tables
 ```
- 
-Una vez publicado, **la base de datos de producción es la fuente de verdad**: no la sobrescribas con la local.
- 
+
 ### Servidor
  
 - Abrir solo los puertos 22, 80 y 443 (`ufw`).
 - SSH por clave, sin contraseña.
 - Backups programados (`cron`) de la base de datos y del volumen `uploads`, con copia fuera del servidor.
 - Actualizaciones de seguridad automáticas del sistema.
-## Windows Server (futuro)
+## Windows Server
  
 Los contenedores Linux no corren de forma nativa en Windows Server. La vía recomendada es una **VM Ubuntu Server en Hyper-V** con Docker Engine, usando exactamente los mismos archivos de producción.
  

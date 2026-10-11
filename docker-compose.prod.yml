@@ -1,0 +1,37 @@
+services:
+  db:
+    image: mysql:lts
+    ports:
+      - "127.0.0.1:3306:3306"
+
+  wordpress:
+    build: .
+    image: ghcr.io/tu_usuario/directorio-wp:${APP_VERSION:-latest}
+    environment:
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_ENVIRONMENT_TYPE', 'production');
+        define('DISALLOW_FILE_EDIT', true);
+        define('FORCE_SSL_ADMIN', true);
+        if (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https') { $_SERVER['HTTPS'] = 'on'; }
+    volumes:
+      - uploads:/var/www/html/wp-content/uploads
+    expose:
+      - "80"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - wordpress
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+
+volumes:
+  uploads:
+  caddy_data:
